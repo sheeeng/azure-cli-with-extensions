@@ -21,7 +21,7 @@
       system:
       let
         pkgs = import nixpkgs {
-          # config.allowUnfree = true;
+          config.allowUnfree = false;
           inherit system;
         };
 

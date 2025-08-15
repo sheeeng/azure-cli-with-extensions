@@ -27,8 +27,9 @@
 
         azure-cli-with-extensions = pkgs.azure-cli.override {
           withExtensions = with pkgs.azure-cli.extensions; [
-            k8s-extension
-            aks-preview
+            account # https://github.com/Azure/azure-cli-extensions/tree/main/src/account
+            aks-preview # https://github.com/Azure/azure-cli-extensions/tree/main/src/aks-preview
+            k8s-extension # https://github.com/Azure/azure-cli-extensions/tree/main/src/k8s-extension
           ];
         };
       in

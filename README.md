@@ -6,7 +6,7 @@ This Azure Command-Line Interface (CLI) with Extensions Nix's Flake shows how yo
 
 ```shell
 flox init
-flox install github:sheeeng/azure-cli-with-extensions-flake
+flox install github:sheeeng/azure-cli-with-extensions
 flox activate
 az extension list
 ```

@@ -27,9 +27,10 @@
 
         azure-cli-with-extensions = pkgs.azure-cli.override {
           withExtensions = with pkgs.azure-cli.extensions; [
-            account # https://github.com/Azure/azure-cli-extensions/tree/main/src/account
-            aks-preview # https://github.com/Azure/azure-cli-extensions/tree/main/src/aks-preview
-            k8s-extension # https://github.com/Azure/azure-cli-extensions/tree/main/src/k8s-extension
+            account # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.account # https://github.com/azure/azure-cli-extensions/tree/main/src/account
+            aks-preview # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.aks-preview # https://github.com/azure/azure-cli-extensions/tree/main/src/aks-preview
+            k8s-extension # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.k8s-extension # https://github.com/azure/azure-cli-extensions/tree/main/src/k8s-extension
+            k8s-runtime # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.k8s-runtime # https://github.com/azure/azure-cli-extensions/tree/main/src/k8s-runtime
           ];
         };
       in

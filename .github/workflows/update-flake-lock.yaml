@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  nix-flake-update:
+  update-flake-lock:
     permissions:
       contents: write
       id-token: write

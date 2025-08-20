@@ -1,14 +1,15 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
+  - directory: /
+    groups:
       github-actions-same-version:
         patterns:
           - "*"
-      interval: "daily"
-      time: "03:00"
-      timezone: "Etc/UTC"
     labels:
-      - "dependencies"
-      - "github-actions"
+      - dependencies
+      - github-actions
+    package-ecosystem: github-actions
+    schedule:
+      interval: daily
+      time: "03:00"
+      timezone: Etc/UTC

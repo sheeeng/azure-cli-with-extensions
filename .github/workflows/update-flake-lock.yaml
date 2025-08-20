@@ -21,3 +21,4 @@ jobs:
           pr-title: "Update Flake Lock"
           pr-labels: |
             dependencies
+          token: ${{ secrets.UPDATE_FLAKE_LOCK }}

@@ -1,0 +1,23 @@
+name: "Update Flake Lock"
+
+on:
+  schedule:
+    - cron: "0 03 * * 1-5" # https://crontab.guru/#0_3_*_*_1-5 # “At 03:00 UTC on every day-of-week from Monday through Friday.”
+  workflow_dispatch:
+
+jobs:
+  nix-flake-update:
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: determinatesystems/determinate-nix-action@379b47b8e270e906339a489d56466ccfd2f69d8c # v3.8.5
+      - uses: determinatesystems/update-flake-lock@c5930b397a673a70ca70be06020e943aeac310a1 # v27
+        with:
+          pr-title: "Update Flake Lock"
+          pr-labels: |
+            dependencies

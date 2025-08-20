@@ -18,7 +18,7 @@ jobs:
       - uses: determinatesystems/determinate-nix-action@379b47b8e270e906339a489d56466ccfd2f69d8c # v3.8.5
       - uses: determinatesystems/update-flake-lock@c5930b397a673a70ca70be06020e943aeac310a1 # v27
         with:
-          pr-title: "Update Flake Lock"
+          pr-title: "chore(deps): update flake.lock"
           pr-labels: |
             dependencies
           token: ${{ secrets.UPDATE_FLAKE_LOCK }}

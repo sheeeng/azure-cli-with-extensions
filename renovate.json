@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "nix": {
+    "_comment": "https://docs.renovatebot.com/modules/manager/nix/",
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "nix"
+      ],
+      "groupName": "nix",
+      "description": "Schedule on weekdays at between 1800-2200 during the night and 0000-0400 in the morning; and anytime on weekends.",
+      "schedule": [
+        "* 18-22,0-4 * * *",
+        "* * * * 0,6"
+      ]
+    }
+  ]
+}

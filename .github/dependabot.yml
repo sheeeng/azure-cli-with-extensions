@@ -10,4 +10,4 @@ updates:
           - "*"
     labels:
       - dependencies
-      - github-actions
+      # - github-actions

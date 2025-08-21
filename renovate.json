@@ -4,7 +4,6 @@
     "config:recommended"
   ],
   "nix": {
-    "_comment": "https://docs.renovatebot.com/modules/manager/nix/",
     "enabled": true
   },
   "packageRules": [

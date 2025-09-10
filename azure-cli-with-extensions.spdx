@@ -1,0 +1,24 @@
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: azure-cli-with-extensions
+DocumentNamespace: https://github.com/sheeeng/azure-cli-with-extensions
+Creator: Tool: manual
+
+# Package Information
+PackageName: azure-cli-with-extensions
+SPDXID: SPDXRef-Package
+PackageVersion: 0.1.0
+PackageSupplier: Person: Leonard Sheng Sheng Lee
+PackageDownloadLocation: https://github.com/sheeeng/azure-cli-with-extensions
+FilesAnalyzed: false
+PackageLicenseConcluded: Apache-2.0 OR MIT
+PackageLicenseDeclared: Apache-2.0 OR MIT
+PackageCopyrightText: Copyright (c) 2025 Leonard Sheng Sheng Lee
+
+# License Information
+LicenseID: Apache-2.0
+ExtractedText: <see LICENSE-APACHE>
+
+LicenseID: MIT
+ExtractedText: <see LICENSE-MIT>

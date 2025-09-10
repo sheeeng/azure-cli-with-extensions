@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 NIX_FLAGS := "--experimental-features 'nix-command flakes' --accept-flake-config"
 
 [doc('Update flake.lock file')]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 {
   # Available Azure CLI Extensions
   # https://learn.microsoft.com/en-us/cli/azure/azure-cli-extensions-list

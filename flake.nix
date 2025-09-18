@@ -54,7 +54,10 @@
 
         azure-cli-with-configuration-and-extensions = pkgs.writeShellApplication {
           name = "az";
-          runtimeInputs = [ azure-cli-with-extensions ];
+          runtimeInputs = [
+            azure-cli-with-extensions
+            pkgs.kubelogin
+          ];
           text = ''
             # Use isolated configuration directory for this flake.
             TEMP_BASE_DIR=''${TMPDIR:-/tmp} # Explicitly use $TMPDIR if available, fallback to /tmp directory.
@@ -80,6 +83,7 @@
       in
       {
         packages.default = azure-cli-with-configuration-and-extensions;
+        packages.kubelogin = pkgs.kubelogin;
       }
     );
 }

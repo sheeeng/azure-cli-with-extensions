@@ -1,5 +1,57 @@
 # Copilot Journals
 
+## 2025-09-18T11:14:34Z
+
+### Add Kubelogin Integration to Azure CLI Flake
+
+Successfully integrated kubelogin with the Azure CLI flake for seamless AKS authentication workflows.
+
+#### Changes Made
+
+1. **Added kubelogin to runtime inputs**: Included `pkgs.kubelogin` in the `runtimeInputs` of the Azure CLI shell application, making it available whenever the Azure CLI is used.
+
+2. **Created separate kubelogin package**: Added `packages.kubelogin = pkgs.kubelogin;` to the flake outputs, allowing direct access to kubelogin as a standalone package.
+
+#### Testing Commands
+
+```bash
+# Test flake validity and build.
+nix flake check
+nix build
+
+# Test Azure CLI with kubelogin integration.
+nix run . -- --version
+
+# Test kubelogin as separate package.
+nix run .#kubelogin -- --version
+
+# Test both tools together.
+nix shell . .#kubelogin -c bash -c 'which az && which kubelogin'
+
+# Test kubelogin functionality.
+nix shell . .#kubelogin -c kubelogin --help
+```
+
+#### Integration Benefits
+
+- **AKS Authentication**: Enables Azure AD authentication for AKS clusters using `kubelogin convert-kubeconfig -l azurecli`.
+- **Seamless Workflow**: Both Azure CLI and kubelogin are available in the same environment for complete Azure Kubernetes workflows.
+- **CI/CD Ready**: Perfect for DevOps pipelines requiring both Azure CLI and Kubernetes authentication.
+- **Version Consistency**: Ensures consistent tooling versions across different environments.
+
+#### Usage Examples
+
+```bash
+# Get AKS credentials and configure Azure AD auth.
+nix shell . .#kubelogin -c bash -c '
+  az aks get-credentials --resource-group myRG --name myCluster
+  kubelogin convert-kubeconfig -l azurecli
+  kubectl get nodes
+'
+```
+
+The flake now provides a complete Azure Kubernetes toolchain with Azure CLI extensions and kubelogin for enterprise-ready AKS authentication.
+
 ## 2025-09-11T11:02:48Z
 
 ### Install and Test Azure CLI via Flox from Branch

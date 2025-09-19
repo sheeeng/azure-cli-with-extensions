@@ -25,7 +25,7 @@
           inherit system;
         };
 
-        azure-cli-base = pkgs.azure-cli.override {
+        azure-cli-with-extensions = pkgs.azure-cli.override {
           withExtensions = with pkgs.azure-cli.extensions; [
             account # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.account # https://github.com/azure/azure-cli-extensions/tree/main/src/account
             aks-preview # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.aks-preview # https://github.com/azure/azure-cli-extensions/tree/main/src/aks-preview
@@ -51,7 +51,7 @@
           enable_log_file = no
         '';
 
-        azure-cli-with-extensions = pkgs.writeShellScriptBin "az" ''
+        azure-cli-with-configuration-and-extensions = pkgs.writeShellScriptBin "az" ''
               set -euo pipefail
 
               export AZURE_CONFIG_DIR="''${AZURE_CONFIG_DIR:-$HOME/.azure-cli-with-extensions}"
@@ -66,11 +66,11 @@
           EOF
               fi
 
-              exec ${azure-cli-base}/bin/az "$@"
+              exec ${azure-cli-with-extensions}/bin/az "$@"
         '';
       in
       {
-        packages.default = azure-cli-with-extensions;
+        packages.default = azure-cli-with-configuration-and-extensions;
       }
     );
 }

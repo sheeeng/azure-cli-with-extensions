@@ -32,7 +32,10 @@ Use [reference-style links][reference-style-links].
 
 Add development information and instructions to this file accordingly.
 
-Do not use slang shorthand words like "config", "util", "func", etc.
+Do not use slang shorthand words like "config", "util", "func", etc. Example:
+
+- Avoid `CONFIG_DIR`, use `CONFIGURATION_DIRECTORY`
+- Avoid `customConfigContent`, use `customConfigurationContent`.
 
 Avoid unnecessary comments whenever possible. Use correct punctuations for comments.
 

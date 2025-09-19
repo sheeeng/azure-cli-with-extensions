@@ -32,6 +32,8 @@ Use [reference-style links][reference-style-links].
 
 Add development information and instructions to this file accordingly.
 
+Do not use slang shorthand words like "config", "util", "func", etc.
+
 Avoid unnecessary comments whenever possible. Use correct punctuations for comments.
 
 Suggest concise, "Don't Repeat Yourself" (DRY), short, maintainable solutions.

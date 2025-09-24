@@ -31,6 +31,7 @@
             aks-preview # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.aks-preview # https://github.com/azure/azure-cli-extensions/tree/main/src/aks-preview
             k8s-extension # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.k8s-extension # https://github.com/azure/azure-cli-extensions/tree/main/src/k8s-extension
             k8s-runtime # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.k8s-runtime # https://github.com/azure/azure-cli-extensions/tree/main/src/k8s-runtime
+            log-analytics # https://search.nixos.org/packages?channel=unstable&type=packages&show=azure-cli-extensions.log-analytics # https://github.com/azure/azure-cli-extensions/tree/main/src/log-analytics
           ];
         };
 

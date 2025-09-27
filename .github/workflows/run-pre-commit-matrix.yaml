@@ -56,7 +56,7 @@ jobs:
             fi
           fi
 
-          echo "should_run=$should_run" >> $GITHUB_OUTPUT
+          echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
           echo "Should run ${{ matrix.manager }}: $should_run"
 
       # Nix setup (plain nix)
@@ -147,11 +147,11 @@ jobs:
         run: |
           case "${{ matrix.manager }}" in
             nix|determinate)
-              echo "prefix=nix develop --command bash -c" >> $GITHUB_OUTPUT
+              echo "prefix=nix develop --command bash -c" >> "$GITHUB_OUTPUT"
               echo "Using Nix command prefix"
               ;;
             flox)
-              echo "prefix=flox activate -- bash -c" >> $GITHUB_OUTPUT
+              echo "prefix=flox activate -- bash -c" >> "$GITHUB_OUTPUT"
               echo "Using Flox command prefix"
               ;;
           esac
@@ -161,35 +161,35 @@ jobs:
         if: steps.branch-check.outputs.should_run == 'true'
         timeout-minutes: 15
         run: |
-          ${{ steps.cmd-prefix.outputs.prefix }} '
+          "${{ steps.cmd-prefix.outputs.prefix }}" "
             if ! command -v pre-commit &> /dev/null; then
-              echo "Missing pre-commit tool."
+              echo 'Missing pre-commit tool.'
               exit 1
             fi
-            echo "Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in environment."
-          '
+            echo 'Found pre-commit \$(pre-commit --version | cut --delimiter=\" \" --fields=2) in environment.'
+          "
 
       # Common pre-commit installation and execution
       - name: Install and Run Pre-Commit
         if: steps.branch-check.outputs.should_run == 'true'
         timeout-minutes: 5
         run: |
-          ${{ steps.cmd-prefix.outputs.prefix }} '
+          "${{ steps.cmd-prefix.outputs.prefix }}" "
             set -o errexit
 
-            echo "Pre-Commit Version: $(pre-commit --version)"
-            echo "Installing pre-commit hooks..."
+            echo 'Pre-Commit Version: \$(pre-commit --version)'
+            echo 'Installing pre-commit hooks...'
             pre-commit install-hooks
 
             # Run pre-commit based on event and branch
-            if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/unstable") ]]; then
-              echo "Running pre-commit on all files (push to ${{ github.ref_name }} branch)"
+            if [[ \"\${{ github.event_name }}\" == \"push\" && (\"\${{ github.ref }}\" == \"refs/heads/main\" || \"\${{ github.ref }}\" == \"refs/heads/unstable\") ]]; then
+              echo 'Running pre-commit on all files (push to \${{ github.ref_name }} branch)'
               pre-commit run --all-files
-            elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-              echo "Running pre-commit on changed files only"
-              pre-commit run --from-ref=origin/${{ github.base_ref }} --to-ref=HEAD
+            elif [[ \"\${{ github.event_name }}\" == \"pull_request\" ]]; then
+              echo 'Running pre-commit on changed files only'
+              pre-commit run --from-ref=origin/\"\${{ github.base_ref }}\" --to-ref=HEAD
             else
-              echo "Running pre-commit on all files as fallback"
+              echo 'Running pre-commit on all files as fallback'
               pre-commit run --all-files
             fi
-          '
+          "

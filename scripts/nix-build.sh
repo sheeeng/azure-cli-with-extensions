@@ -58,7 +58,7 @@ echo "3️⃣  Check installables that resolve to derivations are built."
 if [ -L 'result' ]; then # Check if `result` directory is a symbolic link.
 cat << EOF
 ✅ Installables are built successfully in the below directory.
-`echo $(readlink result)`
+"$(readlink result)"
 EOF
 else
 cat << EOF
@@ -78,7 +78,7 @@ timeout 60 nix run . -- extension list --output table
 echo
 
 echo "6️⃣  Testing extensions..."
-extensions=($(timeout 60 nix run . -- extension list --query '[].name' --output tsv 2>/dev/null || echo ""))
+mapfile -t extensions < <(timeout 60 nix run . -- extension list --query '[].name' --output tsv 2>/dev/null || echo "")
 
 if [ ${#extensions[@]} -eq 0 ]; then
     echo "⚠️  No extensions found or failed to retrieve extension list."
@@ -93,7 +93,7 @@ for extension in "${extensions[@]}"; do
         extension="aks"
     fi
 
-    if timeout 30 nix run . -- ${extension} --help > /dev/null 2>&1; then
+    if timeout 30 nix run . -- "${extension}" --help > /dev/null 2>&1; then
         echo "✅ The azure-cli ${extension} extension is working."
     else
         echo "❌ The azure-cli ${extension} extension not working."

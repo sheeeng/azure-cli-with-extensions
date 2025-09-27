@@ -59,7 +59,7 @@ jobs:
             which pre-commit && pre-commit --version || echo "No pre-commit found."
           }
 
-          echo "✅ Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in Nix environment."
+          echo "✅ Found pre-commit $(pre-commit --version | cut --delimiter=' ' --fields=2) in Nix environment."
 
       - name: Activate Flox Environment
         uses: flox/activate-action@d08556cc1491f3608f5338faf35cfa152dba3d5c # v1.0.0

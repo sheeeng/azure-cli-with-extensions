@@ -41,18 +41,18 @@ jobs:
           }
 
           echo "=== Use Shell ==="
-          nix develop --command bash -c '
-            echo "Successfully entered nix develop environment."
-            echo "\${PATH}: ${PATH}"
-            echo "Checking for pre-commit..."
+          nix develop --command bash -c "
+            echo 'Successfully entered nix develop environment.'
+            echo \"\${PATH}: \${PATH}\"
+            echo 'Checking for pre-commit...'
             if ! command -v pre-commit &> /dev/null; then
-              echo "❌ Missing pre-commit tool."
-              echo "Available commands in environment:"
-              compgen -c | grep -E "^(pre-commit|terraform|keep-sorted|az)" | head -10
+              echo '❌ Missing pre-commit tool.'
+              echo 'Available commands in environment:'
+              compgen -c | grep -E '^(pre-commit|terraform|keep-sorted|az)' | head -10
               exit 1
             fi
-            echo "✅ Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in Nix environment."
-          '
+            echo '✅ Found pre-commit \$(pre-commit --version | cut --delimiter=\" \" --fields=2) in Nix environment.'
+          "
 
       - name: Install Pre-Commit
         timeout-minutes: 5 # Nix store should already be built and cached. But, install hooks from external sources may take time.
@@ -64,22 +64,22 @@ jobs:
       - name: Run Pre-Commit
         timeout-minutes: 5 # Nix store should already be built and cached. But, running hooks on all files may take time.
         run: |
-          nix develop --command bash -c '
-            echo "Pre-Commit Version: $(pre-commit --version)"
-            echo "Installing pre-commit hooks..."
+          nix develop --command bash -c "
+            echo 'Pre-Commit Version: \$(pre-commit --version)'
+            echo 'Installing pre-commit hooks...'
             pre-commit install-hooks
             # Run pre-commit on all files for push to main branch, otherwise only on changed files.
-            if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-              echo "Running pre-commit on all files (push to main branch)"
+            if [[ \"\${{ github.event_name }}\" == \"push\" && \"\${{ github.ref }}\" == \"refs/heads/main\" ]]; then
+              echo 'Running pre-commit on all files (push to main branch)'
               pre-commit run --all-files
             else
-              echo "Running pre-commit on changed files only"
+              echo 'Running pre-commit on changed files only'
               # For pull requests, run on files changed compared to the target branch.
-              if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-                pre-commit run --from-ref=origin/${{ github.base_ref }} --to-ref=HEAD
+              if [[ \"\${{ github.event_name }}\" == \"pull_request\" ]]; then
+                pre-commit run --from-ref=origin/\${{ github.base_ref }} --to-ref=HEAD
               else
                 # For other events, run on all files as fallback.
                 pre-commit run --all-files
               fi
             fi
-          '
+          "

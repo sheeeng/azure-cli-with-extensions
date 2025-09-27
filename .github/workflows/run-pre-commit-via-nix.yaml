@@ -52,6 +52,9 @@ jobs:
             nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
             nix-${{ runner.os }}-
+          # Appends it to default paths and uses the resulting list for restoring and saving caches.
+          paths: |
+            ~/.cache/pre-commit/
           # Explicitly save the cache.
           save: true
           # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63

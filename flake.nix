@@ -24,6 +24,8 @@
           config.allowUnfree = false;
           inherit system;
         };
+        lib = pkgs.lib;
+        uutils-coreutils = pkgs.uutils-coreutils-noprefix;
 
         azure-cli-with-extensions = pkgs.azure-cli.override {
           withExtensions = with pkgs.azure-cli.extensions; [
@@ -72,6 +74,50 @@
       in
       {
         packages.default = azure-cli-with-configuration-and-extensions;
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            # keep-sorted start
+            (lib.hiPrio uutils-coreutils-noprefix) # https://search.nixos.org/packages?channel=unstable&type=packages&show=uutils-coreutils-noprefix
+            azure-cli-with-configuration-and-extensions # Azure CLI with custom configuration and predefined extensions.
+            fluxcd # https://search.nixos.org/packages?channel=unstable&type=packages&show=fluxcd
+            go # https://search.nixos.org/packages?channel=unstable&type=packages&show=go
+            keep-sorted # https://search.nixos.org/packages?channel=unstable&type=packages&show=keep-sorted
+            kubectl # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubectl
+            kubectx # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubectx
+            kubelogin # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubelogin
+            kubernetes-helm # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubernetes-helm
+            kustomize # https://search.nixos.org/packages?channel=unstable&type=packages&show=kustomize
+            pre-commit # https://search.nixos.org/packages?channel=unstable&type=packages&show=pre-commit
+            shellcheck # https://search.nixos.org/packages?channel=unstable&type=packages&show=shellcheck
+            shfmt # https://search.nixos.org/packages?channel=unstable&type=packages&show=shfmt
+            terraform # https://search.nixos.org/packages?channel=unstable&type=packages&show=terraform
+            tflint # https://search.nixos.org/packages?channel=unstable&type=packages&show=tflint
+            tfsort # https://search.nixos.org/packages?channel=unstable&type=packages&show=tfsort
+            yamlfmt # https://search.nixos.org/packages?channel=unstable&type=packages&show=yamlfmt
+            yamllint # https://search.nixos.org/packages?channel=unstable&type=packages&show=yamllint
+            # keep-sorted end
+          ];
+
+          shellHook = ''
+            # Prioritize uutils-coreutils by prepending to $PATH environment variable.
+            export PATH="${uutils-coreutils}/bin:$PATH"
+
+            echo ""
+            echo "🚀 Pre-commit environment loaded!"
+            echo ""
+
+            # Set up environment variables for CI if we're in GitHub Actions.
+            if [ -n "$GITHUB_ACTIONS" ]; then
+              echo "🔧 GitHub Actions detected. Setting up CI environment."
+              export CI=true
+              export TF_IN_AUTOMATION=true
+              export TF_INPUT=0
+            fi
+          '';
+
+          PRE_COMMIT_COLOR = "always";
+        };
       }
     );
 }

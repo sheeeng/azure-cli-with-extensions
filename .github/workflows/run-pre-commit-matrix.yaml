@@ -131,7 +131,7 @@ jobs:
           which flox || echo "flox not found in PATH."
 
           echo "Attempting to activate flox environment with timeout..."
-          timeout 60 flox activate -- pre-commit --version || {
+          flox activate -- pre-commit --version || {
             echo "Failed to activate flox environment or run pre-commit."
             echo "Falling back to system pre-commit if available."
             which pre-commit && pre-commit --version || echo "No pre-commit found."

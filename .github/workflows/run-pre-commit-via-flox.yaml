@@ -44,7 +44,8 @@ jobs:
           channel: stable
           disable-metrics: true
 
-      - name: Show Pre-Commit Version
+      - name: Reuse Cache or Rebuild
+        timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
           set -o xtrace  # set -x # Print a trace of simple commands, for commands, case commands, select commands, and arithmetic for commands and their arguments or associated word lists after they are expanded and before they are executed. The value of the PS4 variable is expanded and the resultant value is printed before the command and its expanded arguments.
 
@@ -52,11 +53,13 @@ jobs:
           which flox || echo "flox not found in PATH."
 
           echo "Attempting to activate flox environment with timeout..."
-          timeout 60 flox activate -- pre-commit --version || {
+          flox activate -- pre-commit --version || {
             echo "Failed to activate flox environment or run pre-commit."
             echo "Falling back to system pre-commit if available."
             which pre-commit && pre-commit --version || echo "No pre-commit found."
           }
+
+          echo "✅ Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in Nix environment."
 
       - name: Activate Flox Environment
         uses: flox/activate-action@d08556cc1491f3608f5338faf35cfa152dba3d5c # v1.0.0

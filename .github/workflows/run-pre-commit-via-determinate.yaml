@@ -32,12 +32,26 @@ jobs:
       - name: Reuse Cache or Rebuild
         timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
+          echo "=== Building with Using Shell ==="
+          # Build the development shell without entering it.
+          nix build .#devShells.x86_64-linux.default --no-link || {
+            echo "Failed to build development shell, trying alternative approach..."
+            # Try flake check to validate the flake.
+            nix flake check --no-eval-cache || echo "Flake check failed."
+          }
+
+          echo "=== Use Shell ==="
           nix develop --command bash -c '
+            echo "Successfully entered nix develop environment."
+            echo "\${PATH}: ${PATH}"
+            echo "Checking for pre-commit..."
             if ! command -v pre-commit &> /dev/null; then
-              echo "Missing pre-commit tool."
+              echo "❌ Missing pre-commit tool."
+              echo "Available commands in environment:"
+              compgen -c | grep -E "^(pre-commit|terraform|keep-sorted|az)" | head -10
               exit 1
             fi
-            echo "Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in Nix environment."
+            echo "✅ Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in Nix environment."
           '
 
       - name: Install Pre-Commit

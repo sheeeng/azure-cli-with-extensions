@@ -1,0 +1,195 @@
+name: Run Pre-Commit Matrix
+
+permissions:
+  actions: write
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - unstable
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.head_ref || github.sha }}"
+  cancel-in-progress: true
+
+env:
+  FLOX_DISABLE_METRICS: "true"
+
+jobs:
+  run-pre-commit:
+    name: Run Pre-Commit (${{ matrix.manager }})
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - manager: "nix"
+            branch-filter: "main"
+          - manager: "determinate"
+            branch-filter: "main"
+          - manager: "flox"
+            branch-filter: "unstable"
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      # Skip job if branch doesn't match the matrix filter (except for workflow_dispatch and pull_request)
+      - name: Check Branch Filter
+        id: branch-check
+        run: |
+          should_run="false"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "${{ github.event_name }}" == "pull_request" ]]; then
+            should_run="true"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ matrix.branch-filter }}" == "main" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+              should_run="true"
+            elif [[ "${{ matrix.branch-filter }}" == "unstable" && "${{ github.ref }}" == "refs/heads/unstable" ]]; then
+              should_run="true"
+            fi
+          fi
+
+          echo "should_run=$should_run" >> $GITHUB_OUTPUT
+          echo "Should run ${{ matrix.manager }}: $should_run"
+
+      # Nix setup (plain nix)
+      - name: Setup Nix (Plain)
+        if: matrix.manager == 'nix' && steps.branch-check.outputs.should_run == 'true'
+        uses: nixbuild/nix-quick-install-action@c57091870f58910a7aef53a0b0a99f6ba568aa6f # v34
+        with:
+          nix_conf: |
+            experimental-features = flakes nix-command
+            keep-env-derivations = true
+            keep-outputs = true
+
+      - name: Cache Nix Store (Plain)
+        if: matrix.manager == 'nix' && steps.branch-check.outputs.should_run == 'true'
+        uses: nix-community/cache-nix-action@e2cf51da82e145785f5db595f553f7cbc2ca54df # v6.1.3
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+          restore-prefixes-first-match: |
+            nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+            nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+            nix-${{ runner.os }}-
+          save: true
+          nix: true
+          gc-max-store-size-linux: 2G
+          purge: true
+          purge-prefixes: |
+            nix-${{ runner.os }}-
+          purge-created: 604800 # 7 days
+          purge-last-accessed: 259200 # 3 days
+          purge-primary-key: never
+
+      # Determinate Systems setup
+      - name: Setup Nix (Determinate)
+        if: matrix.manager == 'determinate' && steps.branch-check.outputs.should_run == 'true'
+        uses: determinatesystems/nix-installer-action@45a18a69953f27af3c2bfad0a5e01c38ef2da462 # v20
+
+      - name: Setup Magic Nix Cache (Determinate)
+        if: matrix.manager == 'determinate' && steps.branch-check.outputs.should_run == 'true'
+        uses: determinatesystems/magic-nix-cache-action@9934a5f127967bcd92e99961e365730ba57253de # v13
+
+      - name: Run Flake Checker (Determinate)
+        if: matrix.manager == 'determinate' && steps.branch-check.outputs.should_run == 'true'
+        uses: determinatesystems/flake-checker-action@3b006c65b880ac90c7894f7d59b892008787cbec # v12
+
+      # Flox setup
+      - name: Cache Flox Environment
+        if: matrix.manager == 'flox' && steps.branch-check.outputs.should_run == 'true'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cache/pre-commit
+            ~/.cache/flox
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.flox/env/manifest.toml', '.flox/env/manifest.lock') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-${{ hashFiles('.flox/env/manifest.toml', '.flox/env/manifest.lock') }}
+            pre-commit-${{ runner.os }}-${{ hashFiles('.flox/env/manifest.toml') }}
+            pre-commit-${{ runner.os }}-
+
+      - name: Setup Flox
+        if: matrix.manager == 'flox' && steps.branch-check.outputs.should_run == 'true'
+        uses: flox/install-flox-action@a25f820b52f45ac0955289ccbb1184267b5abbe3 # v2.0.0
+        with:
+          channel: stable
+          disable-metrics: true
+
+      # Configure Flox environment
+      - name: Configure Flox Environment
+        if: matrix.manager == 'flox' && steps.branch-check.outputs.should_run == 'true'
+        run: |
+          set -o xtrace
+          echo "Checking available tools..."
+          which flox || echo "flox not found in PATH."
+
+          echo "Attempting to activate flox environment with timeout..."
+          timeout 60 flox activate -- pre-commit --version || {
+            echo "Failed to activate flox environment or run pre-commit."
+            echo "Falling back to system pre-commit if available."
+            which pre-commit && pre-commit --version || echo "No pre-commit found."
+          }
+
+          # Configure flox
+          flox config --set disable_metrics true
+
+      # Set command prefix for each manager
+      - name: Set Command Prefix
+        if: steps.branch-check.outputs.should_run == 'true'
+        id: cmd-prefix
+        run: |
+          case "${{ matrix.manager }}" in
+            nix|determinate)
+              echo "prefix=nix develop --command bash -c" >> $GITHUB_OUTPUT
+              echo "Using Nix command prefix"
+              ;;
+            flox)
+              echo "prefix=flox activate -- bash -c" >> $GITHUB_OUTPUT
+              echo "Using Flox command prefix"
+              ;;
+          esac
+
+      # Common verification step
+      - name: Verify Pre-Commit Tool
+        if: steps.branch-check.outputs.should_run == 'true'
+        timeout-minutes: 15
+        run: |
+          ${{ steps.cmd-prefix.outputs.prefix }} '
+            if ! command -v pre-commit &> /dev/null; then
+              echo "Missing pre-commit tool."
+              exit 1
+            fi
+            echo "Found pre-commit $(pre-commit --version | cut --delimiter='\'' '\'' --fields=2) in environment."
+          '
+
+      # Common pre-commit installation and execution
+      - name: Install and Run Pre-Commit
+        if: steps.branch-check.outputs.should_run == 'true'
+        timeout-minutes: 5
+        run: |
+          ${{ steps.cmd-prefix.outputs.prefix }} '
+            set -o errexit
+
+            echo "Pre-Commit Version: $(pre-commit --version)"
+            echo "Installing pre-commit hooks..."
+            pre-commit install-hooks
+
+            # Run pre-commit based on event and branch
+            if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/unstable") ]]; then
+              echo "Running pre-commit on all files (push to ${{ github.ref_name }} branch)"
+              pre-commit run --all-files
+            elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              echo "Running pre-commit on changed files only"
+              pre-commit run --from-ref=origin/${{ github.base_ref }} --to-ref=HEAD
+            else
+              echo "Running pre-commit on all files as fallback"
+              pre-commit run --all-files
+            fi
+          '

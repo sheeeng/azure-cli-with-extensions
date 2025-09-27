@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "github-remote": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "terraform": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "hashicorp/terraform-mcp-server"
+      ],
+      "command": "docker"
+    }
+  }
+}

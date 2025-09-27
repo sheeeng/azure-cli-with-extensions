@@ -82,6 +82,7 @@
             azure-cli-with-configuration-and-extensions # Azure CLI with custom configuration and predefined extensions.
             fluxcd # https://search.nixos.org/packages?channel=unstable&type=packages&show=fluxcd
             go # https://search.nixos.org/packages?channel=unstable&type=packages&show=go
+            gmp # https://search.nixos.org/packages?channel=unstable&type=packages&show=gmp
             keep-sorted # https://search.nixos.org/packages?channel=unstable&type=packages&show=keep-sorted
             kubectl # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubectl
             kubectx # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubectx

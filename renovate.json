@@ -1,23 +1,60 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    "config:best-practices",
     ":disableDependencyDashboard"
   ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "nix": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/\\.nix$/",
+        "/flake\\.nix$/",
+        "/default\\.nix$/",
+        "/shell\\.nix$/"
+      ],
+      "matchStrings": [
+        "fetchFromGitHub\\s*\\{[^}]*owner\\s*=\\s*\"(?<depName>[^\"]+)\"[^}]*repo\\s*=\\s*\"(?<packageName>[^\"]+)\"[^}]*rev\\s*=\\s*\"(?<currentValue>[^\"]+)\"",
+        "fetchFromGitHub\\s*\\{[^}]*repo\\s*=\\s*\"(?<packageName>[^\"]+)\"[^}]*owner\\s*=\\s*\"(?<depName>[^\"]+)\"[^}]*rev\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "{{{depName}}}/{{{packageName}}}",
+      "extractVersionTemplate": "^(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/\\.nix$/",
+        "/flake\\.nix$/",
+        "/default\\.nix$/",
+        "/shell\\.nix$/"
+      ],
+      "matchStrings": [
+        "fetchFromGitHub\\s*\\{[^}]*owner\\s*=\\s*\"(?<depName>[^\"]+)\"[^}]*repo\\s*=\\s*\"(?<packageName>[^\"]+)\"[^}]*rev\\s*=\\s*\"(?<currentValue>[a-f0-9]{40})\"",
+        "fetchFromGitHub\\s*\\{[^}]*repo\\s*=\\s*\"(?<packageName>[^\"]+)\"[^}]*owner\\s*=\\s*\"(?<depName>[^\"]+)\"[^}]*rev\\s*=\\s*\"(?<currentValue>[a-f0-9]{40})\""
+      ],
+      "datasourceTemplate": "github-commits",
+      "depNameTemplate": "{{{depName}}}/{{{packageName}}}",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "versioningTemplate": "loose"
+    }
+  ],
   "packageRules": [
     {
-      "matchManagers": [
-        "nix"
+      "matchFileNames": [
+        "**/*.nix"
       ],
-      "groupName": "nix",
-      "description": "Schedule on weekdays at between 1800-2200 during the night and 0000-0400 in the morning; and anytime on weekends.",
-      "schedule": [
-        "* 18-22,0-4 * * *",
-        "* * * * 0,6"
-      ]
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "description": "Update Nix fetchFromGitHub revisions.",
+      "enabled": true
     }
   ]
 }

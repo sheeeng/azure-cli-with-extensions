@@ -15,7 +15,6 @@ version = 1
 ##  $ flox show gum     <- show all versions of a package
 ## -------------------------------------------------------------------
 [install]
-azure-cli-with-extensions.flake = "."
 fluxcd.pkg-path = "fluxcd"
 go.pkg-path = "go"
 keep-sorted.pkg-path = "keep-sorted"

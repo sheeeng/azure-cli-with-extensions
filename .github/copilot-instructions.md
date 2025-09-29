@@ -56,6 +56,6 @@ Use GNU-style explicit arguments over abbreviated ones. Example: Use `date --uni
 
 Discard all empty trailing whitespace from every file, except Markdown files.
 
-[reference-style-links]: https://www.markdownguide.org/basic-syntax/#reference-style-links
+[reference-style-links]: https://www.markdownguide.org/basic-syntax#reference-style-links
 [nix-manual]: https://nixos.org/manual/nix
 [noogle]: https://noogle.dev

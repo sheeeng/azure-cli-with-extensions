@@ -37,7 +37,7 @@
           ];
         };
 
-        customConfigurationContent = ''
+        customAzureConfigurationContent = ''
           [core]
           collect_telemetry = false
           only_show_errors = false
@@ -65,7 +65,7 @@
 
               if [[ ! -f "$CONFIGURATION_FILE" ]]; then
                 ${pkgs.coreutils}/bin/cat > "$CONFIGURATION_FILE" << 'EOF'
-          ${customConfigurationContent}
+          ${customAzureConfigurationContent}
           EOF
               fi
 

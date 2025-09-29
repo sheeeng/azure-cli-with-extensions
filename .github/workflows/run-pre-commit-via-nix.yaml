@@ -44,33 +44,24 @@ jobs:
       - uses: nix-community/cache-nix-action@e2cf51da82e145785f5db595f553f7cbc2ca54df # v6.1.3
         with:
           # Restore and save a cache using this key.
-          # Focus on flake.lock and flake.nix as they determine actual dependencies.
           primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
           # If there's no cache hit, restore a cache by this prefix.
-          # Use more granular prefixes to get better partial cache hits.
           restore-prefixes-first-match: |
-            nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
             nix-${{ runner.os }}-
-          # Appends it to default paths and uses the resulting list for restoring and saving caches.
+          # Include pre-commit cache directory.
           paths: |
             ~/.cache/pre-commit/
-          # Explicitly save the cache.
-          save: true
-          # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
+          # Enable nix store caching.
           nix: true
           # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
-          gc-max-store-size-linux: 4G
-          # Purge caches.
+          gc-max-store-size-linux: 2G
+          # Purge caches created more than 3 days ago.
           purge: true
-          # Purge specific cache versions only.
           purge-prefixes: |
             nix-${{ runner.os }}-
-          # Created more than this number of seconds ago.
-          purge-created: 432000 # 432000 seconds is 5 days.
-          # Or caches not accessed in the last 3 days.
-          purge-last-accessed: 259200 # 259200 seconds is 3 days.
-          # Except any version with the key that is the same as the `primary-key`.
+          purge-created: 259200 # 3 days in seconds.
+          # Keep the primary key cache.
           purge-primary-key: never
 
       - name: Reuse Cache or Rebuild

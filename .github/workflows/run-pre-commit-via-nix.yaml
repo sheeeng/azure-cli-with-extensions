@@ -80,7 +80,7 @@ jobs:
           echo "Nix version: $(nix --version)"
           echo "Available files:"
           ls -la
-          
+
           echo "=== Building Development Shell ==="
           # Detect current system architecture
           SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
@@ -89,7 +89,7 @@ jobs:
           # Clean approach - build directly without cache corruption
           echo "=== Building Development Shell Fresh ==="
           nix build ".#devShells.$SYSTEM.default" --no-link
-          
+
           echo "✅ Development shell build completed successfully"
 
       - name: Verify Development Environment

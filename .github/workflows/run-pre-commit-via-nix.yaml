@@ -75,26 +75,32 @@ jobs:
         timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
           echo "=== Building Development Shell ==="
-          # Build the development shell without entering it. Let Nix detect the correct system.
-          nix build .#devShells.$(nix eval --impure --raw --expr 'builtins.currentSystem').default --no-link || {
-            echo "Failed to build development shell, trying alternative approach..."
-            # Try flake check to validate the flake.
+          # Detect current system architecture
+          SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+          echo "Detected system: $SYSTEM"
+
+          # Build the development shell without entering it
+          nix build ".#devShells.$SYSTEM.default" --no-link || {
+            echo "Failed to build development shell, trying flake check..."
             nix flake check --no-eval-cache || echo "Flake check failed."
           }
 
+      - name: Verify Development Environment
+        timeout-minutes: 5
+        run: |
           echo "=== Verify Development Environment ==="
-          nix develop --command bash -c "
-            echo 'Successfully entered nix develop environment.'
-            echo \"PATH: \${PATH}\"
-            echo 'Checking for required tools...'
+          nix develop --command bash -c '
+            echo "Successfully entered nix develop environment."
+            echo "PATH: $PATH"
+            echo "Checking for required tools..."
             if ! command -v pre-commit &> /dev/null; then
-              echo '❌ Missing pre-commit tool.'
-              echo 'Available commands in environment:'
-              compgen -c | grep -E '^(pre-commit|terraform|keep-sorted|az)' | head -10
+              echo "❌ Missing pre-commit tool."
+              echo "Available commands in environment:"
+              compgen -c | grep -E "^(pre-commit|terraform|keep-sorted|az)" | head -10
               exit 1
             fi
-            echo '✅ Found pre-commit \$(pre-commit --version | cut --delimiter=\" \" --fields=2) in Nix environment.'
-          "
+            echo "✅ Found pre-commit $(pre-commit --version | cut -d" " -f2) in Nix environment."
+          '
 
       - name: Install Pre-Commit
         timeout-minutes: 5 # Nix store should already be built and cached. But, install hooks from external sources may take time.
@@ -107,22 +113,20 @@ jobs:
       - name: Run Pre-Commit
         timeout-minutes: 5 # Nix store should already be built and cached. But, running hooks on all files may take time.
         run: |
-          nix develop --command bash -c "
-            echo 'Pre-Commit Version: \$(pre-commit --version)'
-            echo 'Installing pre-commit hooks...'
+          nix develop --command bash -c '
+            echo "Pre-Commit Version: $(pre-commit --version)"
+            echo "Installing pre-commit hooks..."
             pre-commit install-hooks
-            # Run pre-commit on all files for push to main branch, otherwise only on changed files.
-            if [[ \"\${{ github.event_name }}\" == \"push\" && \"\${{ github.ref }}\" == \"refs/heads/main\" ]]; then
-              echo 'Running pre-commit on all files (push to main branch)'
+
+            # Determine which files to check
+            if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+              echo "Running pre-commit on all files (push to main branch)"
               pre-commit run --all-files
+            elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              echo "Running pre-commit on changed files only"
+              pre-commit run --from-ref=origin/${{ github.base_ref }} --to-ref=HEAD
             else
-              echo 'Running pre-commit on changed files only'
-              # For pull requests, run on files changed compared to the target branch.
-              if [[ \"\${{ github.event_name }}\" == \"pull_request\" ]]; then
-                pre-commit run --from-ref=origin/\${{ github.base_ref }} --to-ref=HEAD
-              else
-                # For other events, run on all files as fallback.
-                pre-commit run --all-files
-              fi
+              echo "Running pre-commit on all files as fallback"
+              pre-commit run --all-files
             fi
-          "
+          '

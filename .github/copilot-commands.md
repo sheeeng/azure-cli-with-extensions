@@ -6,6 +6,8 @@
 nix flake check
 
 nix build .#default
+
+nix eval --impure --raw --expr 'builtins.currentSystem'
 ```
 
 ## Azure CLI Testing

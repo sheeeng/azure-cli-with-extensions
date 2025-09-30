@@ -10,4 +10,20 @@ updates:
           - "*"
     labels:
       - dependencies
-      # - github-actions
+      - github-actions
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      pre-commit-hooks:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - dependencies
+      - pre-commit
+    open-pull-requests-limit: 5

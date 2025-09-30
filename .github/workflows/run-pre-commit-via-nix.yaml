@@ -85,9 +85,13 @@ jobs:
           SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
           echo "Detected system: $SYSTEM"
 
-          # Clean approach - build directly without cache corruption
-          echo "=== Building Development Shell Fresh ==="
-          nix build ".#devShells.$SYSTEM.default" --no-link
+          # Show available flake outputs
+          echo "=== Available Flake Outputs ==="
+          nix flake show
+
+          # Build the development shell - use .default since eachDefaultSystem handles the system part
+          echo "=== Building Development Shell ==="
+          nix build ".#devShells.default" --no-link
 
           echo "✅ Development shell build completed successfully"
 

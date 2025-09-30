@@ -60,30 +60,52 @@ jobs:
           # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
           nix: true
           # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
-          gc-max-store-size-linux: 4G
-          # Purge old cache entries to prevent cache bloat.
+          gc-max-store-size-linux: 2G
+          # Clear old caches to prevent stale references.
           purge: true
-          # Purge specific cache versions only.
+          # Purge ALL cache versions for this workflow to prevent stale store path issues.
           purge-prefixes: |
             nix-${{ runner.os }}-
-          # Created more than this number of seconds ago.
-          purge-created: 432000 # 432000 seconds is 5 days.
-          # Except any version with the key that is the same as the `primary-key`.
+          # Purge caches older than 1 day to prevent stale store path references.
+          purge-created: 86400 # 86400 seconds is 1 day.
+          # Never purge the current primary key.
           purge-primary-key: never
 
       - name: Reuse Cache or Rebuild
         timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
+          echo "=== Debugging Information ==="
+          echo "Working directory: $(pwd)"
+          echo "Nix version: $(nix --version)"
+          echo "Available files:"
+          ls -la
+
           echo "=== Building Development Shell ==="
           # Detect current system architecture
           SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
           echo "Detected system: $SYSTEM"
 
+          # First try to validate the flake
+          echo "=== Validating Flake ==="
+          if ! nix flake show --json > /dev/null 2>&1; then
+            echo "❌ Flake validation failed, trying to update flake.lock..."
+            nix flake update || echo "Failed to update flake.lock"
+          fi
+
           # Build the development shell without entering it
-          nix build ".#devShells.$SYSTEM.default" --no-link || {
-            echo "Failed to build development shell, trying flake check..."
-            nix flake check --no-eval-cache || echo "Flake check failed."
-          }
+          echo "=== Building Development Shell ==="
+          if ! nix build ".#devShells.$SYSTEM.default" --no-link; then
+            echo "❌ Failed to build development shell with system $SYSTEM, trying alternative approaches..."
+
+            # Try without system specification
+            if ! nix build ".#devShells.default" --no-link; then
+              echo "❌ Failed to build default development shell, trying flake check..."
+              nix flake check --no-eval-cache || echo "❌ Flake check also failed."
+              exit 1
+            fi
+          fi
+
+          echo "✅ Development shell build completed successfully"
 
       - name: Verify Development Environment
         timeout-minutes: 5

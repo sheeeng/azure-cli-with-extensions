@@ -52,45 +52,41 @@ jobs:
             nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
             nix-${{ runner.os }}-
-          # Appends it to default paths and uses the resulting list for restoring and saving caches.
+          # Cache additional paths for pre-commit and other tools.
           paths: |
             ~/.cache/pre-commit/
-            flake.nix
-            flake.lock
           # Explicitly save the cache.
           save: true
           # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
           nix: true
           # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
           gc-max-store-size-linux: 4G
-          # Purge caches.
+          # Purge old cache entries to prevent cache bloat.
           purge: true
           # Purge specific cache versions only.
           purge-prefixes: |
             nix-${{ runner.os }}-
           # Created more than this number of seconds ago.
           purge-created: 432000 # 432000 seconds is 5 days.
-          # Or caches not accessed in the last 3 days.
-          purge-last-accessed: 259200 # 259200 seconds is 3 days.
           # Except any version with the key that is the same as the `primary-key`.
           purge-primary-key: never
 
       - name: Reuse Cache or Rebuild
         timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
-          echo "=== Building with Using Shell ==="
-          # Build the development shell without entering it.
-          nix build .#devShells.x86_64-linux.default --no-link || {
+          echo "=== Building Development Shell ==="
+          # Build the development shell without entering it. Let Nix detect the correct system.
+          nix build .#devShells.$(nix eval --impure --raw --expr 'builtins.currentSystem').default --no-link || {
             echo "Failed to build development shell, trying alternative approach..."
             # Try flake check to validate the flake.
             nix flake check --no-eval-cache || echo "Flake check failed."
           }
 
-          echo "=== Use Shell ==="
+          echo "=== Verify Development Environment ==="
           nix develop --command bash -c "
             echo 'Successfully entered nix develop environment.'
-            echo \"\${PATH}: \${PATH}\"
-            echo 'Checking for pre-commit...'
+            echo \"PATH: \${PATH}\"
+            echo 'Checking for required tools...'
             if ! command -v pre-commit &> /dev/null; then
               echo '❌ Missing pre-commit tool.'
               echo 'Available commands in environment:'

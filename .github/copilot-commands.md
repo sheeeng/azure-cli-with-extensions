@@ -8,6 +8,10 @@ nix flake check
 nix build .#default
 
 nix eval --impure --raw --expr 'builtins.currentSystem'
+
+nix shell nixpkgs#nodejs nixpkgs#nodePackages.npm --command npx renovate-config-validator
+
+nix run nixpkgs#nodePackages.renovate -- --help
 ```
 
 ## Azure CLI Testing

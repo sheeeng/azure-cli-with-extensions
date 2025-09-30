@@ -41,37 +41,38 @@ jobs:
             substituters = https://cache.nixos.org/ https://nix-community.cachix.org
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
 
-      - uses: nix-community/cache-nix-action@e2cf51da82e145785f5db595f553f7cbc2ca54df # v6.1.3
-        with:
-          # Restore and save a cache using this key.
-          # Focus on flake.lock and flake.nix as they determine actual dependencies.
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
-          # If there's no cache hit, restore a cache by this prefix.
-          # Use more granular prefixes to get better partial cache hits.
-          restore-prefixes-first-match: |
-            nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
-            nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
-            nix-${{ runner.os }}-
-          # Cache additional paths for pre-commit and other tools.
-          paths: |
-            ~/.cache/pre-commit/
-          # Explicitly save the cache.
-          save: true
-          # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
-          nix: true
-          # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
-          gc-max-store-size-linux: 2G
-          # Clear old caches to prevent stale references.
-          purge: true
-          # Purge ALL cache versions for this workflow to prevent stale store path issues.
-          purge-prefixes: |
-            nix-${{ runner.os }}-
-          # Purge caches older than 1 day to prevent stale store path references.
-          purge-created: 86400 # 86400 seconds is 1 day.
-          # Never purge the current primary key.
-          purge-primary-key: never
+      # Temporarily disable cache to fix corruption issues
+      # - uses: nix-community/cache-nix-action@e2cf51da82e145785f5db595f553f7cbc2ca54df # v6.1.3
+      #   with:
+      #     # Restore and save a cache using this key.
+      #     # Focus on flake.lock and flake.nix as they determine actual dependencies.
+      #     primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+      #     # If there's no cache hit, restore a cache by this prefix.
+      #     # Use more granular prefixes to get better partial cache hits.
+      #     restore-prefixes-first-match: |
+      #       nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+      #       nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+      #       nix-${{ runner.os }}-
+      #     # Cache additional paths for pre-commit and other tools.
+      #     paths: |
+      #       ~/.cache/pre-commit/
+      #     # Explicitly save the cache.
+      #     save: true
+      #     # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
+      #     nix: true
+      #     # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
+      #     gc-max-store-size-linux: 2G
+      #     # Clear old caches to prevent stale references.
+      #     purge: true
+      #     # Purge ALL cache versions for this workflow to prevent stale store path issues.
+      #     purge-prefixes: |
+      #       nix-${{ runner.os }}-
+      #     # Purge caches older than 1 day to prevent stale store path references.
+      #     purge-created: 86400 # 86400 seconds is 1 day.
+      #     # Never purge the current primary key.
+      #     purge-primary-key: never
 
-      - name: Reuse Cache or Rebuild
+      - name: Build and Test
         timeout-minutes: 15 # Allow sufficient buffer time for Nix to rebuild Nix store.
         run: |
           echo "=== Debugging Information ==="
@@ -79,32 +80,16 @@ jobs:
           echo "Nix version: $(nix --version)"
           echo "Available files:"
           ls -la
-
+          
           echo "=== Building Development Shell ==="
           # Detect current system architecture
           SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
           echo "Detected system: $SYSTEM"
 
-          # First try to validate the flake
-          echo "=== Validating Flake ==="
-          if ! nix flake show --json > /dev/null 2>&1; then
-            echo "❌ Flake validation failed, trying to update flake.lock..."
-            nix flake update || echo "Failed to update flake.lock"
-          fi
-
-          # Build the development shell without entering it
-          echo "=== Building Development Shell ==="
-          if ! nix build ".#devShells.$SYSTEM.default" --no-link; then
-            echo "❌ Failed to build development shell with system $SYSTEM, trying alternative approaches..."
-
-            # Try without system specification
-            if ! nix build ".#devShells.default" --no-link; then
-              echo "❌ Failed to build default development shell, trying flake check..."
-              nix flake check --no-eval-cache || echo "❌ Flake check also failed."
-              exit 1
-            fi
-          fi
-
+          # Clean approach - build directly without cache corruption
+          echo "=== Building Development Shell Fresh ==="
+          nix build ".#devShells.$SYSTEM.default" --no-link
+          
           echo "✅ Development shell build completed successfully"
 
       - name: Verify Development Environment

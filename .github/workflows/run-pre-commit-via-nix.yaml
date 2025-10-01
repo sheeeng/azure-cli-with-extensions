@@ -44,11 +44,12 @@ jobs:
       - uses: nix-community/cache-nix-action@e2cf51da82e145785f5db595f553f7cbc2ca54df # v6.1.3
         with:
           # Restore and save a cache using this key.
-          # Focus on flake.lock and flake.nix as they determine actual dependencies.
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+          # Include git commit to ensure cache validity for exact source.
+          primary-key: nix-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('flake.nix', 'flake.lock') }}
           # If there's no cache hit, restore a cache by this prefix.
           # Use more granular prefixes to get better partial cache hits.
           restore-prefixes-first-match: |
+            nix-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
             nix-${{ runner.os }}-
@@ -66,8 +67,8 @@ jobs:
           # Purge ALL cache versions for this workflow to prevent stale store path issues.
           purge-prefixes: |
             nix-${{ runner.os }}-
-          # Purge caches older than 1 day to prevent stale store path references.
-          purge-created: 86400 # 86400 seconds is 1 day.
+          # Purge caches older than 12 hours to prevent stale store path references.
+          purge-created: 43200 # 43200 seconds is 12 hours.
           # Never purge the current primary key.
           purge-primary-key: never
 
@@ -77,8 +78,13 @@ jobs:
           echo "=== Debugging Information ==="
           echo "Working directory: $(pwd)"
           echo "Nix version: $(nix --version)"
+          echo "Git commit: ${{ github.sha }}"
           echo "Available files:"
           ls -la
+
+          echo "=== Cleaning up potentially stale Nix store references ==="
+          # Clean up any stale references that might cause issues
+          nix store gc --option keep-going true || echo "Store GC completed with warnings"
 
           echo "=== Building Development Shell ==="
           # Detect current system architecture
@@ -89,9 +95,9 @@ jobs:
           echo "=== Available Flake Outputs ==="
           nix flake show
 
-          # Build the development shell - use .default since eachDefaultSystem handles the system part
+          # Build the development shell using the detected system architecture
           echo "=== Building Development Shell ==="
-          nix build ".#devShells.default" --no-link
+          nix build ".#devShells.${SYSTEM}.default" --no-link
 
           echo "✅ Development shell build completed successfully"
 

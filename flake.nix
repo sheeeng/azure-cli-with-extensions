@@ -9,6 +9,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    git-hooks.url = "github:cachix/git-hooks.nix";
+    git-hooks.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -16,6 +18,7 @@
       self,
       nixpkgs,
       flake-utils,
+      git-hooks,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -26,6 +29,9 @@
         };
         lib = pkgs.lib;
         uutils-coreutils = pkgs.uutils-coreutils-noprefix;
+
+        # Import git-hooks configuration
+        git-hooks-check = git-hooks.lib.${system}.run (import ./git-hooks.nix { inherit pkgs; });
 
         azure-cli-with-extensions = pkgs.azure-cli.override {
           withExtensions = with pkgs.azure-cli.extensions; [
@@ -82,12 +88,20 @@
       {
         packages.default = azure-cli-with-configuration-and-extensions;
 
+        # Pre-commit checks - run the hooks in a sandbox with `nix flake check`
+        checks = {
+          git-hooks-check = git-hooks-check;
+        };
+
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             # keep-sorted start
             (lib.hiPrio uutils-coreutils-noprefix) # https://search.nixos.org/packages?channel=unstable&type=packages&show=uutils-coreutils-noprefix
+            actionlint # https://search.nixos.org/packages?channel=unstable&type=packages&show=actionlint
             azure-cli-with-configuration-and-extensions # Azure CLI with custom configuration and predefined extensions.
+            black # https://search.nixos.org/packages?channel=unstable&type=packages&show=black
             fluxcd # https://search.nixos.org/packages?channel=unstable&type=packages&show=fluxcd
+            gitleaks # https://search.nixos.org/packages?channel=unstable&type=packages&show=gitleaks
             gmp # https://search.nixos.org/packages?channel=unstable&type=packages&show=gmp
             go # https://search.nixos.org/packages?channel=unstable&type=packages&show=go
             keep-sorted # https://search.nixos.org/packages?channel=unstable&type=packages&show=keep-sorted
@@ -96,7 +110,14 @@
             kubelogin # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubelogin
             kubernetes-helm # https://search.nixos.org/packages?channel=unstable&type=packages&show=kubernetes-helm
             kustomize # https://search.nixos.org/packages?channel=unstable&type=packages&show=kustomize
+            markdown-link-check # https://search.nixos.org/packages?channel=unstable&type=packages&show=markdown-link-check
+            markdownlint-cli # https://search.nixos.org/packages?channel=unstable&type=packages&show=markdownlint-cli
+            nixfmt-rfc-style # https://search.nixos.org/packages?channel=unstable&type=packages&show=nixfmt-rfc-style
             pre-commit # https://search.nixos.org/packages?channel=unstable&type=packages&show=pre-commit
+            pre-commit # https://search.nixos.org/packages?channel=unstable&type=packages&show=pre-commit
+            prettier # https://search.nixos.org/packages?channel=unstable&type=packages&show=prettier
+            renovate # https://search.nixos.org/packages?channel=unstable&type=packages&show=renovate
+            ruff # https://search.nixos.org/packages?channel=unstable&type=packages&show=ruff
             shellcheck # https://search.nixos.org/packages?channel=unstable&type=packages&show=shellcheck
             shfmt # https://search.nixos.org/packages?channel=unstable&type=packages&show=shfmt
             terraform # https://search.nixos.org/packages?channel=unstable&type=packages&show=terraform
@@ -112,7 +133,7 @@
             export PATH="${uutils-coreutils}/bin:$PATH"
 
             echo ""
-            echo "🚀 Pre-commit environment loaded!"
+            echo "🚀 Development environment loaded!"
             echo ""
 
             # Set up environment variables for CI if we're in GitHub Actions.
@@ -122,7 +143,8 @@
               export TF_IN_AUTOMATION=true
               export TF_INPUT=0
             fi
-          '';
+          ''
+          + git-hooks-check.shellHook;
 
           PRE_COMMIT_COLOR = "always";
         };

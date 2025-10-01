@@ -85,6 +85,8 @@ jobs:
           echo "=== Cleaning up potentially stale Nix store references ==="
           # Clean up any stale references that might cause issues
           nix store gc --option keep-going true || echo "Store GC completed with warnings"
+          # Repair any corruption that might have occurred
+          nix store repair --option keep-going true || echo "Store repair completed with warnings"
 
           echo "=== Building Development Shell ==="
           # Detect current system architecture
@@ -105,17 +107,20 @@ jobs:
         timeout-minutes: 1
         run: |
           echo "=== Verify Development Environment ==="
+          # Repair Nix store if there are any corruption issues
+          nix store repair --option keep-going true || echo "Store repair completed with warnings"
+
           nix develop --command bash -c "
-            echo Successfully entered nix develop environment.
-            echo PATH: \$PATH
-            echo Checking for required tools...
+            echo 'Successfully entered nix develop environment.'
+            echo 'PATH: '\$PATH
+            echo 'Checking for required tools...'
             if ! command -v pre-commit &> /dev/null; then
               echo '❌ Missing pre-commit tool.'
               echo 'Available commands in environment:'
               compgen -c | grep -E '^(pre-commit|terraform|keep-sorted|az)' | head -10
               exit 1
             fi
-            echo '✅ Found pre-commit \$(pre-commit --version | cut -d' ' -f2) in Nix environment.'
+            echo '✅ Found pre-commit '\$(pre-commit --version | cut -d' ' -f2)' in Nix environment.'
           "
 
       - name: Install Pre-Commit

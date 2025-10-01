@@ -55,20 +55,27 @@
         '';
 
         azure-cli-with-configuration-and-extensions = pkgs.writeShellScriptBin "az" ''
-              set -euo pipefail
+              set -o errexit
+              set -o nounset
+              set -o pipefail
 
+              # Set Azure configuration directory with fallback to persistent location.
               export AZURE_CONFIG_DIR="''${AZURE_CONFIG_DIR:-$HOME/.azure-cli-with-extensions}"
 
+              # Create configuration directory if it does not exist.
               ${pkgs.coreutils}/bin/mkdir --parents "$AZURE_CONFIG_DIR"
 
+              # Define configuration file path.
               CONFIGURATION_FILE="$AZURE_CONFIG_DIR/config"
 
+              # Create configuration file if it does not exist.
               if [[ ! -f "$CONFIGURATION_FILE" ]]; then
                 ${pkgs.coreutils}/bin/cat > "$CONFIGURATION_FILE" << 'EOF'
           ${customAzureConfigurationContent}
           EOF
               fi
 
+              # Execute Azure CLI with all passed arguments.
               exec ${azure-cli-with-extensions}/bin/az "$@"
         '';
       in

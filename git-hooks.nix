@@ -199,12 +199,6 @@
       excludes = [ "\.md$" ];
     };
 
-    # Additional useful hooks available in git-hooks.nix
-    # RFC 166-style nixfmt for Nix files
-    nixfmt-rfc-style = {
-      enable = true;
-    };
-
     # =============================================================================
     # COMMENTED PLACEHOLDERS FOR ALL AVAILABLE HOOKS IN GIT-HOOKS.NIX
     # =============================================================================
@@ -212,27 +206,24 @@
     # Uncomment and configure as needed for your project.
     # Reference: https://github.com/cachix/git-hooks.nix/blob/master/modules/hooks.nix
 
-    # # actionlint = {
-    # #   enable = true;
-    # #   # Static checker for GitHub Actions workflow files
-    # # };
+    actionlint = {
+      enable = true;
+    };
 
-    # # action-validator = {
-    # #   enable = true;
-    # #   # Tool to validate GitHub Action and Workflow YAML files
-    # # };
+    action-validator = {
+      enable = true;
+    };
 
-    # # alejandra = {
-    # #   enable = true;
-    # #   # The Uncompromising Nix Code Formatter
-    # #   settings = {
-    # #     check = false;
-    # #     configPath = null;
-    # #     exclude = [ ];
-    # #     threads = null;
-    # #     verbosity = "normal";
-    # #   };
-    # # };
+    alejandra = {
+      enable = true;
+      settings = {
+        check = false;
+        configPath = null;
+        exclude = [ ];
+        threads = null;
+        verbosity = "normal";
+      };
+    };
 
     # # annex = {
     # #   enable = true;
@@ -784,6 +775,10 @@
     # #     width = null;
     # #   };
     # # };
+
+    nixfmt-rfc-style = {
+      enable = true;
+    };
 
     # # nixpkgs-fmt = {
     # #   enable = true;

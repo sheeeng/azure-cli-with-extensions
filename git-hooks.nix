@@ -17,39 +17,39 @@
     check-added-large-files = {
       enable = true;
       args = [ "--maxkb=10240" ];
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2321
 
     # pre-commit: check-ast → git-hooks.nix: check-python
     check-python = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2378
 
     # pre-commit: check-builtin-literals → git-hooks.nix: check-builtin-literals
     check-builtin-literals = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2329
 
     # pre-commit: check-case-conflict → git-hooks.nix: check-case-conflicts
     check-case-conflicts = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2337
 
     # pre-commit: check-docstring-first → git-hooks.nix: check-docstring-first
     check-docstring-first = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2345
 
     # pre-commit: check-executables-have-shebangs → git-hooks.nix: check-executables-have-shebangs
     check-executables-have-shebangs = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2353
 
     # TODO: pre-commit: check-illegal-windows-names → git-hooks.nix: not available
 
     # pre-commit: check-json → git-hooks.nix: check-json
     check-json = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2362
 
     # pre-commit: check-merge-conflict → git-hooks.nix: check-merge-conflicts
     check-merge-conflicts = {
@@ -60,12 +60,12 @@
     # pre-commit: check-shebang-scripts-are-executable → git-hooks.nix: check-shebang-scripts-are-executable
     check-shebang-scripts-are-executable = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2370
 
     # pre-commit: check-symlinks → git-hooks.nix: check-symlinks
     check-symlinks = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2395
 
     # pre-commit: check-toml → git-hooks.nix: check-toml
     check-toml = {
@@ -274,33 +274,28 @@
       enable = true;
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2272
 
-    # # cabal-gild = {
-    # #   enable = true;
-    # #   # Format Cabal files
-    # # };
+    cabal-gild = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2280
 
-    # # cabal2nix = {
-    # #   enable = true;
-    # #   # Run `cabal2nix` on all `*.cabal` files to generate corresponding `.nix` files
-    # #   settings = {
-    # #     outputFilename = "default.nix";
-    # #   };
-    # # };
+    cabal2nix = {
+      enable = true;
+      settings = {
+        outputFilename = "default.nix";
+      };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2296
 
-    # # cargo-check = {
-    # #   enable = true;
-    # #   # Check the cargo package for errors
-    # # };
+    cargo-check = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2305
 
-    # # checkmake = {
-    # #   enable = true;
-    # #   # Experimental linter/analyzer for Makefiles
-    # # };
+    checkmake = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2314
 
-    # # chktex = {
-    # #   enable = true;
-    # #   # LaTeX semantic checker
-    # # };
+    chktex = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2435
 
     # # circleci = {
     # #   enable = true;

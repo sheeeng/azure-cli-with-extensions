@@ -8,9 +8,8 @@
 # - New git-hooks.nix:
 # https://github.com/cachix/git-hooks.nix/blob/master/modules/hooks.nix
 # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix
-
+#
 { pkgs }:
-
 {
   src = ./.;
   hooks = {

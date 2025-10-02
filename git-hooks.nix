@@ -258,8 +258,9 @@
       settings = {
         binPath = null;
         write = true;
-        configPath = "";
-      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L179
+        configPath = ".biome.json";
+      };
+      args = [ "--no-errors-on-unmatched" ];
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2229
 
     black = {

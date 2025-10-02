@@ -11,8 +11,8 @@ set -o nounset  # set -u # Treat unset variables and parameters other than the s
 shopt -s inherit_errexit # If set, command substitution inherits the value of the errexit option, instead of unsetting it in the subshell environment. This option is enabled when POSIX mode is enabled.
 
 if [ -d ".git" ] || git rev-parse --git-dir > /dev/null 2>&1; then
-  GIT_ROOT_DIRECTORY=$(git rev-parse --show-toplevel)
-  echo "\${GIT_ROOT_DIRECTORY}: ${GIT_ROOT_DIRECTORY}"
+    GIT_ROOT_DIRECTORY=$(git rev-parse --show-toplevel)
+    echo "\${GIT_ROOT_DIRECTORY}: ${GIT_ROOT_DIRECTORY}"
 fi
 SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 echo "\${SCRIPT_DIRECTORY}: ${SCRIPT_DIRECTORY}"
@@ -56,12 +56,12 @@ EOF
 echo '========================================================================'
 echo "3️⃣  Check installables that resolve to derivations are built."
 if [ -L 'result' ]; then # Check if `result` directory is a symbolic link.
-cat << EOF
+    cat << EOF
 ✅ Installables are built successfully in the below directory.
 "$(readlink result)"
 EOF
 else
-cat << EOF
+    cat << EOF
 ❌ No installables or derivations found.
 EOF
 fi
@@ -98,7 +98,7 @@ for extension in "${extensions[@]}"; do
     else
         echo "❌ The azure-cli ${extension} extension not working."
     fi
-  echo
+    echo
 done
 
 echo "🎉 All tests completed!"

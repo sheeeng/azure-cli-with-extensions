@@ -220,7 +220,7 @@
         configPath = null;
         exclude = [ ];
         threads = null;
-        verbosity = "normal";
+        verbosity = "quiet";
       };
     };
 

@@ -297,36 +297,31 @@
       enable = true;
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2435
 
-    # # circleci = {
-    # #   enable = true;
-    # #   # Validate CircleCI config files
-    # # };
+    circleci = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2443
 
-    # # clang-format = {
-    # #   enable = true;
-    # #   # Format your code using `clang-format`
-    # # };
+    clang-format = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2465
 
-    # # clang-tidy = {
-    # #   enable = true;
-    # #   # Static analyzer for C++ code
-    # # };
+    clang-tidy = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2485
 
-    # # cljfmt = {
-    # #   enable = true;
-    # #   # A tool for formatting Clojure code
-    # # };
+    clippy = {
+      enable = true;
+      settings = {
+        denyWarnings = false;
+        offline = true;
+        allFeatures = false;
+        extraArgs = "";
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L246
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2492
 
-    # # clippy = {
-    # #   enable = true;
-    # #   # Lint Rust code
-    # #   settings = {
-    # #     denyWarnings = false;
-    # #     offline = true;
-    # #     allFeatures = false;
-    # #     extraArgs = "";
-    # #   };
-    # # };
+    cljfmt = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2514
 
     # # cmake-format = {
     # #   enable = true;

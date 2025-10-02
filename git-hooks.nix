@@ -207,11 +207,11 @@
 
     actionlint = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2155
 
     action-validator = {
       enable = true;
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2164
 
     alejandra = {
       enable = false; # TODO: Disabled to avoid conflicts with nixfmt-rfc-style.
@@ -221,64 +221,56 @@
         exclude = [ ];
         threads = null;
         verbosity = "quiet";
-      };
-    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L93
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L93
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2173
 
-    # # annex = {
-    # #   enable = true;
-    # #   # Runs the git-annex hook for large file support
-    # # };
+    annex = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2193
 
-    # # ansible-lint = {
-    # #   enable = true;
-    # #   # Ansible linter
-    # #   settings = {
-    # #     configPath = "";
-    # #     subdir = "";
-    # #   };
-    # # };
+    ansible-lint = {
+      enable = true;
+      settings = {
+        configPath = "";
+        subdir = "";
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L135
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2200
 
-    # # autoflake = {
-    # #   enable = true;
-    # #   # Remove unused imports and variables from Python code
-    # #   settings = {
-    # #     binPath = null;
-    # #     flags = "--in-place --expand-star-imports --remove-duplicate-keys --remove-unused-variables";
-    # #   };
-    # # };
+    autoflake = {
+      enable = true;
+      settings = {
+        binPath = null;
+        flags = "--in-place --expand-star-imports --remove-duplicate-keys --remove-unused-variables";
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L155
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2216
 
-    # # bats = {
-    # #   enable = true;
-    # #   # Run bash unit tests
-    # # };
+    bats = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2247
 
-    # # beautysh = {
-    # #   enable = true;
-    # #   # Format shell files
-    # # };
+    beautysh = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2256
 
-    # # biome = {
-    # #   enable = true;
-    # #   # A toolchain for web projects, aimed to provide functionalities to maintain them
-    # #   settings = {
-    # #     binPath = null;
-    # #     write = true;
-    # #     configPath = "";
-    # #   };
-    # # };
+    biome = {
+      enable = true;
+      settings = {
+        binPath = null;
+        write = true;
+        configPath = "";
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L179
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2229
 
-    # # black = {
-    # #   enable = true;
-    # #   # The uncompromising Python code formatter
-    # #   settings = {
-    # #     flags = "";
-    # #   };
-    # # };
+    black = {
+      enable = true;
+      settings = {
+        flags = "";
+      }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L218
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2264
 
-    # # cabal-fmt = {
-    # #   enable = true;
-    # #   # Format Cabal files
-    # # };
+    cabal-fmt = {
+      enable = true;
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2272
 
     # # cabal-gild = {
     # #   enable = true;

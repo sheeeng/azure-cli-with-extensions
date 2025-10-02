@@ -214,15 +214,15 @@
     };
 
     alejandra = {
-      enable = true;
+      enable = false; # TODO: Disabled to avoid conflicts with nixfmt-rfc-style.
       settings = {
-        check = false;
+        check = true;
         configPath = null;
         exclude = [ ];
         threads = null;
         verbosity = "quiet";
       };
-    };
+    }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L93
 
     # # annex = {
     # #   enable = true;
@@ -775,8 +775,11 @@
     # #   };
     # # };
 
+    # Primary Nix formatter - RFC 166 style (formats files in-place)
     nixfmt-rfc-style = {
       enable = true;
+      # nixfmt-rfc-style automatically formats files according to RFC 166 standard
+      # Works alongside alejandra which handles linting/checking
     };
 
     # # nixpkgs-fmt = {

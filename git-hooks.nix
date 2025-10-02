@@ -225,13 +225,14 @@
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2173
 
     annex = {
-      enable = true;
+      enable = false;
+      package = pkgs.git-annex; # TODO: error: cannot coerce null to a string: null
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2193
 
     ansible-lint = {
       enable = true;
       settings = {
-        configPath = "";
+        configPath = ".ansible-lint";
         subdir = "";
       }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L135
     }; # https://github.com/cachix/git-hooks.nix/blob/54df955a695a84cd47d4a43e08e1feaf90b1fd9b/modules/hooks.nix#L2200

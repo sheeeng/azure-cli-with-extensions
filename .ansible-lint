@@ -1,0 +1,25 @@
+---
+# Ansible Lint Configuration
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+# Skip specific rules.
+skip_list:
+  - yaml[line-length] # Skip line length checks for YAML files.
+
+# Warn instead of error for certain rules.
+warn_list:
+  - experimental # Experimental rules should only warn.
+
+# Set the offline mode (do not download additional rules).
+offline: true
+
+# Use default rules except those in skip_list.
+use_default_rules: true
+
+# Exclude certain directories or files if needed.
+exclude_paths:
+  - .git/
+  - .github/dependabot.yml
+
+# Set verbosity level (0-2).
+verbosity: 1

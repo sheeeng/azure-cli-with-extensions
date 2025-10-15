@@ -39,7 +39,7 @@ jobs:
             pre-commit-${{ runner.os }}-${{ hashFiles('.flox/env/manifest.toml') }}
             pre-commit-${{ runner.os }}-
 
-      - uses: flox/install-flox-action@ca4d833a75ce056d985b57bf4c6e4bb02153d6dd # v2.0.0
+      - uses: flox/install-flox-action@f191b9b5e99cc7a023a0aba676394cc012cf7074 # v2.0.0
         with:
           channel: stable
           disable-metrics: true

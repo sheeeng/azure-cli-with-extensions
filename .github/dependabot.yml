@@ -14,8 +14,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "daily"
     groups:
       pre-commit-hooks:
         patterns:

@@ -93,6 +93,8 @@
           git-hooks-check = git-hooks-check;
         };
 
+        formatter = pkgs.nixfmt-rfc-style;
+
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             # keep-sorted start
@@ -113,7 +115,6 @@
             markdown-link-check # https://search.nixos.org/packages?channel=unstable&type=packages&show=markdown-link-check
             markdownlint-cli # https://search.nixos.org/packages?channel=unstable&type=packages&show=markdownlint-cli
             nixfmt-rfc-style # https://search.nixos.org/packages?channel=unstable&type=packages&show=nixfmt-rfc-style
-            pre-commit # https://search.nixos.org/packages?channel=unstable&type=packages&show=pre-commit
             pre-commit # https://search.nixos.org/packages?channel=unstable&type=packages&show=pre-commit
             prettier # https://search.nixos.org/packages?channel=unstable&type=packages&show=prettier
             renovate # https://search.nixos.org/packages?channel=unstable&type=packages&show=renovate
@@ -145,8 +146,6 @@
             fi
           ''
           + git-hooks-check.shellHook;
-
-          PRE_COMMIT_COLOR = "always";
         };
       }
     );

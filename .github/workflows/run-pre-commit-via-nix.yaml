@@ -44,31 +44,26 @@ jobs:
       - uses: nix-community/cache-nix-action@135667ec418502fa5a3598af6fb9eb733888ce6a # v6.1.3
         with:
           # Restore and save a cache using this key.
-          # Include git commit to ensure cache validity for exact source.
-          primary-key: nix-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('flake.nix', 'flake.lock') }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
           # If there's no cache hit, restore a cache by this prefix.
-          # Use more granular prefixes to get better partial cache hits.
           restore-prefixes-first-match: |
-            nix-${{ runner.os }}-${{ github.sha }}-${{ hashFiles('flake.nix', 'flake.lock') }}
             nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
-            nix-${{ runner.os }}-${{ hashFiles('flake.nix') }}
             nix-${{ runner.os }}-
           # Cache additional paths for pre-commit and other tools.
           paths: |
             ~/.cache/pre-commit/
           # Explicitly save the cache.
           save: true
-          # Enable nix store caching. # https://github.com/nix-community/cache-nix-action/blob/e2cf51da82e145785f5db595f553f7cbc2ca54df/action.yml#L63
+          # Enable nix store caching.
           nix: true
           # Collect garbage until the Nix store size is at most this number before trying to save a new cache.
-          gc-max-store-size-linux: 2G
+          gc-max-store-size-linux: 3G
           # Clear old caches to prevent stale references.
           purge: true
-          # Purge ALL cache versions for this workflow to prevent stale store path issues.
-          purge-prefixes: |
-            nix-${{ runner.os }}-
-          # Purge caches older than 12 hours to prevent stale store path references.
-          purge-created: 43200 # 43200 seconds is 12 hours.
+          # Purge caches older than 7 days.
+          purge-created: 604800
+          # Only purge caches from the same workflow.
+          purge-prefixes: nix-${{ runner.os }}-
           # Never purge the current primary key.
           purge-primary-key: never
 
@@ -81,12 +76,6 @@ jobs:
           echo "Git commit: ${{ github.sha }}"
           echo "Available files:"
           ls -la
-
-          echo "=== Cleaning up potentially stale Nix store references ==="
-          # Clean up any stale references that might cause issues
-          nix store gc --option keep-going true || echo "Store GC completed with warnings"
-          # Repair any corruption that might have occurred
-          nix store repair --option keep-going true || echo "Store repair completed with warnings"
 
           echo "=== Building Development Shell ==="
           # Detect current system architecture
@@ -107,9 +96,6 @@ jobs:
         timeout-minutes: 1
         run: |
           echo "=== Verify Development Environment ==="
-          # Repair Nix store if there are any corruption issues
-          nix store repair --option keep-going true || echo "Store repair completed with warnings"
-
           nix develop --command bash -c "
             echo 'Successfully entered nix develop environment.'
             echo 'PATH: '\$PATH

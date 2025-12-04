@@ -8,12 +8,12 @@ on:
     - cron: "0 03 * * 1-5" # “At 03:00 UTC on every day-of-week from Monday through Friday.” # https://crontab.guru/#0_3_*_*_1-5
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   update-flake-lock:
     permissions:
       contents: write
-      id-token: write
-      issues: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
@@ -37,3 +37,4 @@ jobs:
             dependencies
           pr-title: "chore(deps): update flake.lock"
           token: ${{ secrets.GITHUB_TOKEN }}
+          nix-options: --debug --log-format raw

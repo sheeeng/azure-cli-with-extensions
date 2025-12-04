@@ -21,11 +21,19 @@ jobs:
       - uses: determinatesystems/determinate-nix-action@b3e3f405539b332fcb96794525f35fb10c230baa # v3.13.2
       - uses: determinatesystems/update-flake-lock@834c491b2ece4de0bbd00d85214bb5e83b4da5c6 # v28
         with:
-          git-author-email: "github-actions[bot]@users.noreply.github.com"
+          # dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+          # https://api.github.com/users/dependabot%5Bbot%5D
+          #
+          # github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          # https://api.github.com/users/github-actions%5Bbot%5D
+          #
+          # https://github.com/orgs/community/discussions/26560#discussioncomment-12555758
+          # https://github.com/actions/checkout/blob/8e8c483db84b4bee98b60c0593521ed34d9990e8/README.md#L358
+          git-author-email: "41898282+github-actions[bot]@users.noreply.github.com"
           git-author-name: "github-actions[bot]"
-          git-committer-email: "github-actions[bot]@users.noreply.github.com"
+          git-committer-email: "41898282+github-actions[bot]@users.noreply.github.com"
           git-committer-name: "github-actions[bot]"
           pr-labels: |
             dependencies
           pr-title: "chore(deps): update flake.lock"
-          token: ${{ secrets.UPDATE_FLAKE_LOCK }}
+          token: ${{ secrets.GITHUB_TOKEN }}

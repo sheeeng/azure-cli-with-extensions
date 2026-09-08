@@ -27,7 +27,7 @@ jobs:
         with:
           token: ${{ steps.create-token.outputs.token }}
 
-      - uses: determinatesystems/determinate-nix-action@89ab342bd48ff7318caf8d39d6a330c7b1df8f2f # v3.15.2
+      - uses: determinatesystems/determinate-nix-action@021c8a1bd3570eb21f5c20a054812b0c4d9ca614 # v3.22.3
 
       # References:
       # dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
